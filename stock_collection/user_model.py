@@ -4,8 +4,8 @@ import os
 
 from sqlalchemy.exc import IntegrityError
 
-from meal_max.db import db
-from meal_max.utils.logger import configure_logger
+from stock_collection.db import db
+from logger import configure_logger
 
 
 logger = logging.getLogger(__name__)
