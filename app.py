@@ -83,3 +83,49 @@ def create_app(config_class=ProductionConfig):
         except Exception as e:
             app.logger.error("Failed to add user: %s", str(e))
             return make_response(jsonify({'error': str(e)}), 500)
+
+    @app.route('/api/login', methods=['POST'])
+    def login():
+        """
+        Route to log in a user and load their portfolio.
+
+        Expected JSON Input:
+            - username (str): The username of the user.
+            - password (str): The user's password.
+
+        Returns:
+            JSON response indicating the success of the login.
+
+        Raises:
+            400 error if input validation fails.
+            401 error if authentication fails (invalid username or password).
+            500 error for any unexpected server-side issues.
+        """
+        data = request.get_json()
+        if not data or 'username' not in data or 'password' not in data:
+            app.logger.error("Invalid request payload for login.")
+            raise BadRequest("Invalid request payload. 'username' and 'password' are required.")
+
+        username = data['username']
+        password = data['password']
+
+        try:
+            # Validate user credentials
+            if not Users.check_password(username, password):
+                app.logger.warning("Login failed for username: %s", username)
+                raise Unauthorized("Invalid username or password.")
+
+            # Get user ID
+            user_id = Users.get_id_by_username(username)
+
+            # Load user's combatants into the battle model
+            login_user(user_id, portfolio_model)
+
+            app.logger.info("User %s logged in successfully.", username)
+            return jsonify({"message": f"User {username} logged in successfully."}), 200
+
+        except Unauthorized as e:
+            return jsonify({"error": str(e)}), 401
+        except Exception as e:
+            app.logger.error("Error during login for username %s: %s", username, str(e))
+            return jsonify({"error": "An unexpected error occurred."}), 500
