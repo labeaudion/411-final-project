@@ -4,7 +4,7 @@ import os
 
 from sqlalchemy.exc import IntegrityError
 
-from stock_collection.utils.db import db
+from stock_collection.db import db
 from logger import configure_logger
 
 
