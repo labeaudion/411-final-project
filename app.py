@@ -130,6 +130,23 @@ def create_app(config_class=ProductionConfig):
             app.logger.error("Error during login for username %s: %s", username, str(e))
             return jsonify({"error": "An unexpected error occurred."}), 500
 
+    @app.route('/api/update-password', methods=['POST'])
+    def update_password():
+        """
+        Route to update a user's password.
+
+        Expected JSON Input:
+            - username (str): The username of the user.
+
+        Returns:
+            JSON response indicating the success of the updated password.
+
+        Raises:
+            400 error if input validation fails.
+            401 error if authentication fails (invalid username).
+            500 error for any unexpected server-side issues.
+        """
+    
 
     ###########################################################
     #
