@@ -1,6 +1,6 @@
 import pytest
 
-from stock_collection.user_model import Users
+from stock_collection.models.user_model import Users
 
 
 @pytest.fixture
