@@ -169,6 +169,22 @@ def create_app(config_class=ProductionConfig):
             JSON response indicating success of the operation or error message.
         """
 
+    @app.route('/api/look-up-stock', methods=['GET'])
+    def look_up_stock(stock_symbol: str):
+        """
+        Route to look up specific information about a stock.
+
+        Returns:
+            Response: A JSON response indicating the success or failure of the operation.
+
+        Returns:
+            JSON response indicating the success of the stock look-up.
+        Raises:
+            400 error if input validation fails.
+            500 error if there is an issue looking up the stock.
+        """
+
+    
     @app.route('/api/init-db', methods=['POST'])
     def init_db():
         """
@@ -201,3 +217,30 @@ def create_app(config_class=ProductionConfig):
     # Portfolio
     #
     ############################################################
+
+    @app.route('/api/view-portfolio', methods=['GET'])
+    def view_portfolio() -> Response:
+        """
+        Route to get the stocks from the portfolio.
+
+        Returns:
+            JSON response with the list of stocks.
+        """
+
+    @app.route('/api/calculate-portfolio-value', methods=['POST'])
+    def calculate_portfoliio_value() -> Response:
+        """
+        Route to calculate the portfolio value.
+
+        Returns:
+            JSON response indicating the total value of the portfolio.
+        Raises:
+            500 error if there is an issue calculating the porfolio.
+        """
+
+
+
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True, host='0.0.0.0', port=5000)
