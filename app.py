@@ -1,3 +1,4 @@
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 from werkzeug.exceptions import BadRequest, Unauthorized
@@ -129,3 +130,19 @@ def create_app(config_class=ProductionConfig):
         except Exception as e:
             app.logger.error("Error during login for username %s: %s", username, str(e))
             return jsonify({"error": "An unexpected error occurred."}), 500
+
+
+    ###########################################################
+    #
+    # Stocks
+    #
+    ###########################################################
+
+
+            
+
+    ############################################################
+    #
+    # Portfolio
+    #
+    ############################################################
