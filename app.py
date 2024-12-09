@@ -156,7 +156,18 @@ def create_app(config_class=ProductionConfig):
             400 error if input validation fails.
             500 error if there is an issue adding the stock purchase to the database.
         """
+        
+    @app.route('/api/sell-stock/<int:stock_id>', methods=['DELETE'])
+    def sell_stock(stock_id: int) -> Response:
+        """
+        Route to delete a stock by its ID. This performs a soft delete by marking it as deleted.
 
+        Path Parameter:
+            - stock_id (int): The ID of the stock to delete.
+
+        Returns:
+            JSON response indicating success of the operation or error message.
+        """
             
 
     ############################################################
