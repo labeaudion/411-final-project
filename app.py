@@ -8,7 +8,6 @@ from config import ProductionConfig
 from stock_model.db import db
 from stock_collection.models.portfolio_model import PortfolioModel
 from stock_collection.models.stock_model import Stock
-from stock_collection.models.mongo_session_model import login_user, logout_user
 from stock_collection.models.user_model import Users
 
 # Load environment variables from .env file
