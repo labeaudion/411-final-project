@@ -138,6 +138,24 @@ def create_app(config_class=ProductionConfig):
     #
     ###########################################################
 
+    @app.route('/api/buy-stock', methods=['POST'])
+    def buy_stock() -> Response:
+        """
+        Route to buy a new stock to the database.
+
+        Expected JSON Input:
+            # the below must be changed
+            # - meal (str): The name of the combatant (meal).
+            # - cuisine (str): The cuisine type of the combatant (e.g., Italian, Chinese).
+            # - price (float): The price of the combatant.
+            # - difficulty (str): The preparation difficulty (HIGH, MED, LOW).
+
+        Returns:
+            JSON response indicating the success of the stock purchase.
+        Raises:
+            400 error if input validation fails.
+            500 error if there is an issue adding the stock purchase to the database.
+        """
 
             
 
