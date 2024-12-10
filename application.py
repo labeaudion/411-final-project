@@ -14,6 +14,10 @@ import random
 
 
 def findStockbySymbol(stock):
+    """
+        Search a stock by keywords
+    """
+
     url = url = f"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={stock}&apikey=VHM98Q5C5SWA8W94"
     r = requests.get(url)
     text = r.json()
@@ -26,8 +30,12 @@ def findStockbySymbol(stock):
     return text
 
 def getStockPrice(stock):
+    """
+        Retrievs the "real-time" price of the stock, searches by stock's SYMBOAL!!! 
+    """
+    
     try:
-        url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={stock}&interval=5min&apikey=VHM98Q5C5SWA8W94"
+        url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={stock}&apikey=VHM98Q5C5SWA8W94"
         r = requests.get(url)
         text = r.json()
 
@@ -44,7 +52,7 @@ def getStockPrice(stock):
         search_stock = json.load(openfile)
 
     try:
-        for stock_price in search_stock["Time Series (5min)"].keys():
+        for stock_price in search_stock["Time Series (Daily)"].keys():
             options = ["1. open", "2. high", "3. low", "4. close"]
             ran_option = random.choice(options)
 
@@ -59,25 +67,32 @@ def getStockPrice(stock):
 
 class StockTrade:
     def __init__(self):
-        """
-        s
-        """
         self.BuyingPower = 1000.0000
         self.curr_Portfolio = [
-            #{
-            #"Stock" : , 
-            #"Bought @" : , 
-            #"Amt Bought" :  ,
-            #}
+            '''
+            each dictionary contains the infromation of a stock. E.g. 
+            {
+            "Stock" : "IBM", holds the stock symbol; type (str) 
+            "Bought @" : 100.0, holds the value at  which the stock was bought at; type (float)
+            "Amt Bought" :  2, holds the value of the amount of the stock bought; type (int)
+            "Total Cost" : 200.2, holds the total cost of all the stock bought 
+            "Current Price": 101.0, holds the latest value(real-time) of the stock, always gets updated by calling updatePortfolio; type (float)
+            "Profit @each": 1.0, holds the value of profit of 1 stock, updates according to value of current price; type (foat)
+            "Totall Profit": 2.0, holds the value of total profit of the stock, updates according to value of current price; type (float)
+            }
+            '''     
         ]
 
     def updatePortfolio(self):
+        """
+            Get the latest (real-time) value of the stock and updates the user's portfolio accordingly
+        """
         portfolio = []
 
         for item in self.curr_Portfolio:
             dup_item = item
-            dup_item["Current Price"] = getStockPrice(dup_item['Stock'])
             dup_item["Total Cost"] =  dup_item["Bought @"] * dup_item["Amt Bought"]
+            dup_item["Current Price"] = getStockPrice(dup_item['Stock'])
             dup_item["Profit @each"] = dup_item["Bought @"] - dup_item ["Current Price"]
             dup_item["Total Profit"] = dup_item["Profit @each"] * dup_item["Amt Bought"]
             portfolio.append(dup_item)
@@ -86,10 +101,10 @@ class StockTrade:
 
 
     def Buy(self,stock, amt):
-        try:
-            price = getStockPrice(stock)
-        except:
-            raise Exception("Sorry, the stock does not exist")
+        """
+            Buys the amount of stock given if it is within the user's buying power
+        """
+        price = getStockPrice(stock)
         
         total_cost = amt  * price
         
@@ -109,7 +124,11 @@ class StockTrade:
 
     
     def Sell(self, stock, amt):
-
+        """
+            Sells the designated amount of stock if the user has the stock and the amount of it in their portfolio.
+            Additionally, deletes a stock from their portfolio if they sell all of one stock
+            Updates buying power accordingly
+        """
         for item in self.curr_Portfolio:
             if item["Stock"] == stock:
 
@@ -152,9 +171,12 @@ class StockTrade:
         return (total_value, total_profit)
 
     def viewPortfolio(self):
+        """
+            Shows the user's portfolio as well as tells the buying power, total value, and profit of all the stocks in the user's portfolio
+        """
         self.updatePortfolio()
         portfolio_val,  portfolio_profit = self.calPortolio()
-        information = f"You currently have ${portfolio_val} in Stocks\nYou have a total profit of ${portfolio_profit}.\nBelow is your curent portfolio:\n", self.curr_Portfolio
+        information = f"You have ${self.BuyingPower} to spend.\nYou currently have ${portfolio_val} in Stocks\nYou have a total profit of ${portfolio_profit}.\nBelow is your curent portfolio:\n", self.curr_Portfolio
         return information
 
 ####################
