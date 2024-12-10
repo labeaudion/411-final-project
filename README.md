@@ -2,8 +2,9 @@
 
 ## Application Description
 
-This application is a Flask-based API that allows users to manage their stock portfolio, including creating accounts, logging in, adding/removing stocks, and tracking portfolio value.
-The application can only make 25 API calls a day for free, so it was hard to perform extensive testing.
+This application is a Flask-based API that allows users to manage their stock portfolio, including creating accounts, logging in, adding/removing stocks, and tracking portfolio value. It is designed for individual investors who want to manage their portfolios, execute trades, and monitor market conditions.
+
+The application can only make 25 API calls a day for free, so it was difficult to perform extensive testing.
 
 ## Route Descriptions
 
