@@ -2,6 +2,7 @@
 
 ## Application Description
 
+This application is a Flask-based API that allows users to manage their stock portfolio, including creating accounts, logging in, adding/removing stocks, and tracking portfolio value.
 The application can only make 25 API calls a day for free, so it was hard to perform extensive testing.
 
 ## Route Descriptions
@@ -150,7 +151,7 @@ The application can only make 25 API calls a day for free, so it was hard to per
   ````json
     {
       "symbol": "AAPL",
-      "current_price": $247.77,
+      "current_price": 247.77,
       "company_name": "Apple Inc",
       "company_description": "Apple designs consumer electronics...",
       "market_cap": "2.5T"
