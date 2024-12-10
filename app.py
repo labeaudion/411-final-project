@@ -1,8 +1,6 @@
-
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 from werkzeug.exceptions import BadRequest, Unauthorized
-# from flask_cors import CORS
 
 from config import ProductionConfig
 from stock_collection.db import db
@@ -117,7 +115,7 @@ def create_app(config_class=ProductionConfig):
                 raise Unauthorized("Invalid username or password.")
 
             app.logger.info("User %s logged in successfully.", username)
-            return jsonify({"message": f"User {username} logged in successfully."}), 400
+            return jsonify({"message": f"User {username} logged in successfully."}), 200
 
         except Unauthorized as e:
             return jsonify({"error": str(e)}), 401
@@ -175,98 +173,6 @@ def create_app(config_class=ProductionConfig):
     #
     ###########################################################
 
-    @app.route('/api/buy-stock', methods=['POST'])
-    def buy_stock() -> Response:
-        """
-        Route to buy a new stock to the database.
-
-        Expected JSON Input:
-            - symbol (str): The stock symbol of the company.
-            - quantity (int): The amount of stocks to purchase.
-
-        Returns:
-            JSON response indicating the success of the stock purchase.
-        Raises:
-            400 error if input validation fails.
-            500 error if there is an issue adding the stock purchase to the database.
-        """
-        app.logger.info('Buying new stock')
-        try:
-            # Get the JSON data from the request
-            data = request.get_json()
-
-            # Extract and validate required fields
-            symbol = data.get('symbol')
-            quantity = data.get('quantity')
-
-            if not symbol or not isinstance(symbol, str):
-                raise BadRequest("Stock symbol is required and should be a string.")
-            
-            if not isinstance(quantity, int) or quantity <= 0:
-                raise BadRequest("Quantity must be a positive integer.")
-            
-            # Ensure the stock exists and the operation is possible (mock behavior in this case)
-            if symbol != Stock.symbol:
-                raise BadRequest(f"Stock symbol {symbol} not found.")
-            
-
-            # Call the buy_stock method to update the stock
-            app.logger.info('Buying stock: %s, %d', symbol, quantity)
-            updated_quantity = Stock.buy_stock(quantity)
-
-            app.logger.info("Stock purchased: %s, %d", symbol, updated_quantity)
-            return make_response(jsonify({'status': 'stock purchased', 'company': symbol}), 201)
-        except Exception as e:
-            app.logger.error("Failed to buy stock: %s", str(e))
-            return make_response(jsonify({'error': str(e)}), 500)
-
-
-        
-    @app.route('/api/sell-stock>', methods=['DELETE'])
-    def sell_stock() -> Response:
-        """
-        Route to sell a stock.
-
-        Expected JSON Input:
-            - symbol (str): The symbol of the stock to sell.
-
-        Returns:
-            JSON response indicating success of the selling or error message.
-        Raises:
-            400 error if input validation fails.
-            500 error if there is an issue adding the stock selling to the database.
-        """
-        app.logger.info('Selling stock')
-        try:
-            # Get the JSON data from the request
-            data = request.get_json()
-
-            # Extract and validate required fields
-            symbol = data.get('symbol')
-            quantity = data.get('quantity')
-
-            if not symbol or not isinstance(symbol, str):
-                raise BadRequest("Stock symbol is required and should be a string.")
-            
-            if not isinstance(quantity, int) or quantity <= 0:
-                raise BadRequest("Quantity must be a positive integer.")
-            
-            # Ensure the stock exists and the operation is possible (mock behavior in this case)
-            if symbol != Stock.symbol:
-                raise BadRequest(f"Stock symbol {symbol} not found.")
-            
-            # Call the sell_stock method to update the stock
-            app.logger.info('Selling stock: %s, %d', symbol, quantity)
-            updated_quantity = Stock.sell_stock(quantity)
-
-            app.logger.info("Stock sold: %s, %d", symbol, updated_quantity)
-            return make_response(jsonify({'status': 'stock sold', 'company': symbol}), 201)
-        except Exception as e:
-            app.logger.error("Failed to sell stock: %s", str(e))
-            return make_response(jsonify({'error': str(e)}), 500)
-
-
-    
     @app.route('/api/init-db', methods=['POST'])
     def init_db():
         """
@@ -293,6 +199,43 @@ def create_app(config_class=ProductionConfig):
         except Exception as e:
             app.logger.error("Failed to initialize database: %s", str(e))
             return jsonify({"status": "error", "message": "Failed to initialize database."}), 500
+        
+
+    @app.route('/api/look-up-stock', methods=['GET'])
+    def look_up_stock(stock_symbol: str):
+        """
+        Route to look up detailed information about a specific stock, including its current market
+        price, historical price data, and a brief description of the company.
+
+        Expected JSON Input:
+            - symbol (str): The symbol of the stock to look up.
+
+        Returns:
+            JSON response indicating the success of the stock look-up.
+        Raises:
+            400 error if input validation fails.
+            500 error if there is an issue looking up the stock.
+        """
+        stock_symbol = request.args.get('stock_symbol', '').strip()
+
+        if not stock_symbol:
+            return jsonify({"error": "Stock symbol is required"}), 400
+
+        # Call the model's method to fetch stock details
+        stock_data = portfolio_model.look_up_stock(stock_symbol)
+
+        # If there's an error in the response
+        if "error" in stock_data:
+            return jsonify({"error": stock_data["error"]}), 500
+
+        # Return a successful response
+        return jsonify({
+            "symbol": stock_symbol,
+            "current_price": stock_data.get("current_price"),
+            "company_name": stock_data.get("company_name"),
+            "company_description": stock_data.get("company_description"),
+            "market_cap": stock_data.get("market_cap"),
+        }), 200
 
     ############################################################
     #
@@ -342,43 +285,110 @@ def create_app(config_class=ProductionConfig):
             return make_response(jsonify({'error': str(e)}), 500)
 
 
-    @app.route('/api/look-up-stock', methods=['GET'])
-    def look_up_stock(stock_symbol: str):
+    @app.route('/api/buy-stock', methods=['POST'])
+    def buy_stock() -> Response:
         """
-        Route to look up detailed information about a specific stock, including its current market
-        price, historical price data, and a brief description of the company.
+        Route to buy a new stock to the database.
 
         Expected JSON Input:
-            - symbol (str): The symbol of the stock to look up.
+            - stock_symbol (str): The stock symbol of the company.
+            - stock_name (str): The name of the company.
+            - quantity (int): The amount of stocks to purchase.
 
         Returns:
-            JSON response indicating the success of the stock look-up.
+            JSON response indicating the success of the stock purchase.
         Raises:
             400 error if input validation fails.
-            500 error if there is an issue looking up the stock.
+            500 error if there is an issue adding the stock purchase to the database.
         """
-        stock_symbol = request.args.get('stock_symbol', '').strip()
+        app.logger.info('Buying new stock')
+        try:
+            # Get the JSON data from the request
+            data = request.get_json()
 
-        if not stock_symbol:
-            return jsonify({"error": "Stock symbol is required"}), 400
+            # Extract and validate required fields
+            stock_symbol = data.get('symbol')
+            stock_name = data.get('name')
+            quantity = data.get('quantity')
 
-        # Call the model's method to fetch stock details
-        stock_data = portfolio_model.look_up_stock(stock_symbol)
+            if not stock_symbol or not isinstance(stock_symbol, str):
+                raise BadRequest("Stock symbol is required and should be a string.")
+            
+            if not isinstance(quantity, int) or quantity <= 0:
+                raise BadRequest("Quantity must be a positive integer.")
+            
+            if not stock_name or not isinstance(stock_name, str):
+                raise BadRequest("Company name is required and should be a string.")
+            
+            # Ensure the stock exists and the operation is possible (mock behavior in this case)
+            stock = Stock.query.filter_by(symbol=stock_symbol).first()
+            if not stock:
+                raise BadRequest(f"Stock symbol {stock_symbol} not found.")
+            
 
-        # If there's an error in the response
-        if "error" in stock_data:
-            return jsonify({"error": stock_data["error"]}), 500
+            # Call the buy_stock method to update the stock
+            app.logger.info('Buying stock: %s, %d', stock_symbol, quantity)
+            updated_quantity = portfolio_model.buy_stock(stock_symbol, stock_name, quantity)
 
-        # Return a successful response
-        return jsonify({
-            "symbol": stock_symbol,
-            "current_price": stock_data.get("current_price"),
-            "company_name": stock_data.get("company_name"),
-            "company_description": stock_data.get("company_description"),
-            "market_cap": stock_data.get("market_cap"),
-        }), 200
+            if updated_quantity == -1:
+                # If the return value is -1, it indicates an error in the buy operation
+                return make_response(jsonify({'error': 'Failed to buy stock'}), 400)
+
+            app.logger.info("Stock purchased: %s, %s, %d", stock_symbol, stock_name, updated_quantity)
+            return make_response(jsonify({'status': 'stock purchased', 'company': stock_symbol, 'updated_quantity': updated_quantity}), 201)
+        except Exception as e:
+            app.logger.error("Failed to buy stock: %s", str(e))
+            return make_response(jsonify({'error': str(e)}), 500)
 
 
+    @app.route('/api/sell-stock', methods=['DELETE'])
+    def sell_stock() -> Response:
+        """
+        Route to sell a stock.
+
+        Expected JSON Input:
+            - symbol (str): The symbol of the stock to sell.
+            - quantity (int): The quantity of shares to sell.
+
+        Returns:
+            JSON response indicating success of the selling or error message.
+        Raises:
+            400 error if input validation fails.
+            500 error if there is an issue adding the stock selling to the database.
+        """
+        app.logger.info('Selling stock')
+        try:
+            # Get the JSON data from the request
+            data = request.get_json()
+
+            # Extract and validate required fields
+            symbol = data.get('symbol')
+            quantity = data.get('quantity')
+
+            if not symbol or not isinstance(symbol, str):
+                raise BadRequest("Stock symbol is required and should be a string.")
+            
+            if not isinstance(quantity, int) or quantity <= 0:
+                raise BadRequest("Quantity must be a positive integer.")
+            
+            # Ensure the stock exists in the portfolio
+            stock = Stock.query.filter_by(symbol=symbol).first()
+            if not stock:
+                raise BadRequest(f"Stock symbol {symbol} not found in portfolio.")
+            
+            # Call the sell_stock method to update the stock
+            app.logger.info('Selling stock: %s, %d', symbol, quantity)
+            updated_quantity = portfolio_model.sell_stock(symbol, quantity)
+
+            if updated_quantity == -1:
+                # If the return value is -1, it indicates an error in the sell operation
+                return make_response(jsonify({'error': 'Failed to sell stock or invalid quantity'}), 400)
+
+            app.logger.info("Stock sold: %s, %d", symbol, updated_quantity)
+            return make_response(jsonify({'status': 'stock sold', 'company': symbol, 'updated_quantity': updated_quantity}), 201)
+        except Exception as e:
+            app.logger.error("Failed to sell stock: %s", str(e))
+            return make_response(jsonify({'error': str(e)}), 500)
 
 
     return app

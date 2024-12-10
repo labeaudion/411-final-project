@@ -5,9 +5,6 @@ import requests
 from dotenv import load_dotenv
 import os
 
-from sqlalchemy import event
-from sqlalchemy.exc import IntegrityError
-
 from stock_collection.db import db
 from stock_collection.utils.logger import configure_logger
 
@@ -36,7 +33,7 @@ class Stock:
 
     def get_current_price(self) -> float:
         """
-        Fetch the current stock price from an external API.
+        Fetches the current stock price from an external API.
 
         Returns:
             float: The current stock price.
@@ -67,7 +64,7 @@ class Stock:
 
     def look_up_stock(self) -> Dict[str, Any]:
         """
-        Fetch detailed information about the stock: current price, historical data, and company description.
+        Fetches detailed information about the stock: current price, historical data, and company description.
 
         Returns:
             Dict: A dictionary containing stock details (e.g., current price, historical data, description).
@@ -89,7 +86,7 @@ class Stock:
 
     def get_stock_history(self) -> List[Dict[str, Any]]:
         """
-        Fetch the historical price data of the stock from an external API.
+        Fetches the historical price data of the stock from an external API.
 
         Returns:
             List: A list of historical price data.
@@ -117,7 +114,7 @@ class Stock:
 
     def get_stock_description(self) -> str:
         """
-        Fetch a brief description of the company associated with the stock.
+        Fetches a brief description of the company associated with the stock.
 
         Returns:
             str: A brief description of the company.
@@ -143,7 +140,7 @@ class Stock:
             return "No description available."
         
 
-    def sell(self, quantity: int) -> None:
+    def sell(self, quantity: int) -> int:
         """
         Reduces the quantity of the stock after a sale.
         
@@ -161,13 +158,13 @@ class Stock:
         self.quantity -= quantity
 
 
-    def buy(self, quantity: int) -> None:
+    def buy(self, quantity: int) -> int:
         """
         Increases the quantity of the stock after a purchase.
 
         Args:
             quantity (int): The number of shares the user wants to purchase.
-        
+
         Raises:
             ValueError: If the quantity the user wants to buy is below or equal to 0.
 
