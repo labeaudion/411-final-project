@@ -22,8 +22,7 @@
   ````json
     {
       "status": "healthy"
-    }
-    ```
+    }```
   
 ### Route 2: Create Account
 
