@@ -2,6 +2,7 @@
 
 ## Application Description
 
+The application can only make 25 API calls a day for free, so it was hard to perform extensive testing.
 
 ## Route Descriptions
 
@@ -26,22 +27,28 @@
   ````
   
 ### Route 2: Create Account
-- **Path**: `/api/`
-- **Request Type**: ``
-- **Purpose**: 
+- **Path**: `/api/create-account`
+- **Request Type**: `POST`
+- **Purpose**: Creates a new user account with a username and password.
 - **Request Format**:
-  - Parameter:
+  - `username` (String): User's chosen username.
+  - `password` (String): User's chosen password.
 - **Response Format**: JSON
   - **Success Response Example**:
-    - Code: 
-    - Content: ``````
+    - Code: 200
+    - Content: ```{"status": "user added", "username": username}```
 - **Example Request**:
-  ```bash
-  GET /api/health
+  ````json
+    {
+      "username": "john_doe",
+      "password": "securepassword"
+    }
+  ````
 - **Example Response**:
   ````json
     {
-      
+      "status": "user added",
+      "username": "john_doe"
     }
   ````
 
