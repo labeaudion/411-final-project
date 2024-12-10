@@ -17,7 +17,7 @@ class PortfolioModel:
     A class to manage a portfolio of stocks.
 
     Attributes:
-        stock_list (Dict[Stock]): The list of stocks in the portfolio.
+        stock_list (Dict[Stock]): A dictionary of stocks in the portfolio. (Key: Stock Symbol, Value: Stock Object)
 
     """
 
@@ -28,7 +28,13 @@ class PortfolioModel:
         self.stock_list: Dict[str, Stock] = {} # Key: Stock Symbol, Value: Stock Object
 
     def get_current_price(self) -> float:
-        """Fetch the current stock price from Alpha Vantage API."""
+        """
+        Fetches the current stock price from Alpha Vantage API.
+
+        Returns:
+            float: the current price of the stock.
+        
+        """
         api_key = os.getenv('ALPHA_VANTAGE_API_KEY')  # Replace with your actual API key
         url = f'https://www.alphavantage.co/query'
         params = {
@@ -70,7 +76,7 @@ class PortfolioModel:
 
         print("\nPortfolio Details:")
         print("-------------------------------------------------")
-        for stock_symbol, stock in self.stock_list:
+        for stock_symbol, stock in self.stock_list.items():
             stock_value = stock.quantity * stock.current_price
             total_value += stock_value
 
@@ -114,7 +120,7 @@ class PortfolioModel:
         return total_value
 
 
-    def buy_stock(self, stock_symbol: str, stock_name: str, quantity: int) -> None:
+    def buy_stock(self, stock_symbol: str, stock_name: str, quantity: int) -> int:
         """
         Enables users to purchase shares of a specified stock.
 
@@ -123,10 +129,13 @@ class PortfolioModel:
             stock_name (str): The name of the company stock.
             quantity (int): An integer representing the quantity of the stock the user wants to purchase. 
 
+        Returns:
+            int: The updated quantity of the stock in the portfolio after the purchase.
+
         """
         if quantity <= 0:
             logger.error("Quantity must be a positive integer to add or buy stock.")
-            return
+            return -1
         
         # Check if the stock already exists in the portfolio
         existing_stock = self.stock_list.get(stock_symbol)
@@ -135,6 +144,7 @@ class PortfolioModel:
             # Stock exists in portfolio, update the quantity
             existing_stock.buy(quantity)
             logger.info(f"Added {quantity} more shares of {stock_symbol} to portfolio. New quantity: {existing_stock.quantity}")
+            return existing_stock.quantity
         else:
             # Stock does not exist, create a new stock object and add it
             current_price = self.get_current_price(stock_symbol)
@@ -142,32 +152,37 @@ class PortfolioModel:
                 new_stock = Stock(symbol=stock_symbol, name=stock_name, quantity=quantity, current_price=current_price)
                 self.stock_list[stock_symbol] = new_stock
                 logger.info(f"Added {quantity} shares of {stock_symbol} to portfolio at price ${current_price}.")
+                return new_stock.quantity
             else:
                 logger.error(f"Failed to retrieve current price for {stock_symbol}, cannot add stock.")
+                return -1
 
 
 
-    def sell_stock(self, stock_symbol: str, quantity: int) -> None:
+    def sell_stock(self, stock_symbol: str, quantity: int) -> int:
         """
         Allows users to sell shares of a stock they currently hold.
 
         Args:
             stock_symbol (str): The symbol of the stock to sell/remove.
             quantity (int): An integer representing the quantity of the stock the user wants to sell.
+
+        Returns:
+            int: An integer representing the current quantity of the stock the user holds.
         """
         if quantity <= 0:
             logger.error("Quantity must be a positive integer to sell stock.")
-            return
+            return -1  # Return an invalid quantity to indicate failure
         
         stock = self.stock_list.get(stock_symbol)
 
         if not stock:
             logger.warning(f"Stock {stock_symbol} is not in the portfolio.")
-            return
+            return -1  # Return an invalid quantity if the stock doesn't exist
         
         if stock.quantity < quantity:
             logger.error(f"Not enough shares of {stock_symbol} to sell. You have {stock.quantity} shares.")
-            return
+            return -1  # Return an invalid quantity if there's not enough stock
         
         # Sell the stock
         stock.sell(quantity)
@@ -178,3 +193,6 @@ class PortfolioModel:
             logger.info(f"Removed {stock_symbol} from portfolio after selling all shares.")
         else:
             logger.info(f"Sold {quantity} shares of {stock_symbol}. Remaining quantity: {stock.quantity}")
+
+        # Return the updated quantity of the stock
+        return stock.quantity
