@@ -14,7 +14,7 @@
 - **Response Format**: JSON
   - **Success Response Example**:
     - Code: 200
-    - Content: ```json{"status": "healthy"}```
+    - Content: ```{"status": "healthy"}```
 - **Example Request**:
   ```bash
   GET /api/health
