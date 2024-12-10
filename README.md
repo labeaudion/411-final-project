@@ -30,7 +30,7 @@
 - **Request Type**: ``
 - **Purpose**: 
 - **Request Format**:
-  - 
+  - Parameter:
 - **Response Format**: JSON
   - **Success Response Example**:
     - Code: 
@@ -43,7 +43,7 @@
     {
       
     }
-  ```
+  ````
 
 
 ### Route 3: Login
