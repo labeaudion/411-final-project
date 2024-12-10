@@ -22,10 +22,28 @@
   ````json
     {
       "status": "healthy"
-    }```
+    }
+  ```
   
 ### Route 2: Create Account
-
+- **Path**: `/api/`
+- **Request Type**: ``
+- **Purpose**: 
+- **Request Format**:
+  - 
+- **Response Format**: JSON
+  - **Success Response Example**:
+    - Code: 
+    - Content: ``````
+- **Example Request**:
+  ```bash
+  GET /api/health
+- **Example Response**:
+  ````json
+    {
+      
+    }
+  ```
 
 
 ### Route 3: Login
