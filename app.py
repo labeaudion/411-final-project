@@ -131,6 +131,7 @@ def create_app(config_class=ProductionConfig):
         Expected JSON Input:
             - username (str): The username of the user.
             - password (str): The user's current password.
+            - new_password (str): The user's new chosen password.
 
         Returns:
             JSON response indicating the success of the updated password.
