@@ -14,8 +14,8 @@ The application can only make 25 API calls a day for free, so it was difficult t
 - .env file
   - ALPHA_VANTAGE_API_KEY: API key needed to run the application.
   - DB_PATH: Database path for the application.
-  - SQL_CREATE_TABLE_PATH:
-  - CREATE_DB:
+  - SQL_CREATE_TABLE_PATH: Path to SQL script used to create a database file.
+  - CREATE_DB: Sets up the database
 - Dockerfile
 
 ## Route Descriptions
