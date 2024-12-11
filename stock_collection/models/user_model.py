@@ -5,7 +5,7 @@ import os
 from sqlalchemy.exc import IntegrityError
 
 from stock_collection.db import db
-from logger import configure_logger
+from stock_collection.utils.logger import configure_logger
 
 
 logger = logging.getLogger(__name__)
@@ -62,7 +62,6 @@ class Users(db.Model):
             logger.error("Database error: %s", str(e))
             raise
 
-
     @classmethod
     def check_password(cls, username: str, password: str) -> bool:
         """
@@ -85,7 +84,25 @@ class Users(db.Model):
         hashed_password = hashlib.sha256((password + user.salt).encode()).hexdigest()
         return hashed_password == user.password
 
-    
+    @classmethod
+    def delete_user(cls, username: str) -> None:
+        """
+        Delete a user from the database.
+
+        Args:
+            username (str): The username of the user to delete.
+
+        Raises:
+            ValueError: If the user does not exist.
+        """
+        user = cls.query.filter_by(username=username).first()
+        if not user:
+            logger.info("User %s not found", username)
+            raise ValueError(f"User {username} not found")
+        db.session.delete(user)
+        db.session.commit()
+        logger.info("User %s deleted successfully", username)
+
     @classmethod
     def get_id_by_username(cls, username: str) -> int:
         """
@@ -106,7 +123,6 @@ class Users(db.Model):
             raise ValueError(f"User {username} not found")
         return user.id
 
-    
     @classmethod
     def update_password(cls, username: str, new_password: str) -> None:
         """
