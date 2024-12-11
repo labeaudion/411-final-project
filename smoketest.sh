@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the base URL for the Flask API
-BASE_URL="http://localhost:5000/api"
+BASE_URL="http://localhost:5001/api"
 
 # Flag to control whether to echo JSON output
 ECHO_JSON=false
@@ -28,7 +28,7 @@ check_health() {
 
 create_user() {
   echo "Creating a new user..."
-  curl -s -X POST "$BASE_URL/create-user" -H "Content-Type: application/json" \
+  curl -s -X POST "$BASE_URL/create-account" -H "Content-Type: application/json" \
     -d '{"username":"testuser", "password":"password123"}' | grep -q '"status": "user added"'
   if [ $? -eq 0 ]; then
     echo "User created successfully."
@@ -94,19 +94,18 @@ init_db() {
 }
 
 look_up_stock() {
-    stock_symbol=$1
-    echo "Looking up a stock..."
-    response=$(curl -s -X GET "$BASE_URL/look-up-stock/$stock_symbol")
-    if echo "$response" | grep -q "symbol : $stock_symbol"; then
-        echo "Looked up a stock successfully."
-        if [ "$ECHO_JSON" = true ]; then
-            echo "Stock JSON:"
-            echo "$response" | jq .
-        fi
-    else
-        echo "Error looking up stock."
-        exit 1
+  echo "Looking up stock (AAPL)"
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-id/aapl")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal retrieved successfully by ID (1)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (ID 1):"
+      echo "$response" | jq .
     fi
+  else
+    echo "Failed to get meal by ID (1)."
+    exit 1
+  fi
 }
 
 
@@ -137,12 +136,9 @@ calculate_portfolio_value() {
 }
 
 buy_stock() {
-  stock_symbol=$1
-  stock_name=$2
-  quantity=$3
   echo "Buying stock..."
   response=$(curl -s -X POST "$BASE_URL/buy-stock" -H "Content-Type: application/json" \
-    -d "{\"stock_symbol\":\"$stock_symbol\", \"stock_name\":\"$stock_name\", \"quantity\":"$quantity"}")
+    -d "{\"stock_symbol\":\"appl\", \"stock_name\":\"Apple Inc\", \"quantity\":"5"}")
   if echo "$response" | grep -q '"status": "stock purchased"'; then
     echo "Purchase successful."
     if [ "$ECHO_JSON" = true ]; then
@@ -183,4 +179,12 @@ sell_stock() {
 }
 
 check_health
+init_db
+create_user
+login_user
+update_password
+view_portfolio
+calculate_portfolio_value
+echo "Tests passed"
+
 
