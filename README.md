@@ -6,6 +6,15 @@ This application is a Flask-based API that allows users to manage their stock po
 
 The application can only make 25 API calls a day for free, so it was difficult to perform extensive testing.
 
+## Steps Required to Run
+1) Run the docker script.
+2) Create an API key from Alpha Vantage (https://www.alphavantage.co/)
+
+## Variables Defined in Environment
+- .env file
+  - ALPHA_VANTAGE_API_KEY: API key needed to run the application.
+- Dockerfile
+
 ## Route Descriptions
 
 ### Route 1: Healthcheck
