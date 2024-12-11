@@ -132,10 +132,13 @@ class PortfolioModel:
         Returns:
             int: The updated quantity of the stock in the portfolio after the purchase.
 
+        Raises:
+            ValueError: If the amount of stock to be bought is 0 or in the negatie
         """
         if quantity <= 0:
             logger.error("Quantity must be a positive integer to add or buy stock.")
-            return -1
+            raise ValueError("Quantity must be a positive integer to add or buy stock.")
+            
         
         # Check if the stock already exists in the portfolio
         existing_stock = self.stock_list.get(stock_symbol)
@@ -169,21 +172,25 @@ class PortfolioModel:
 
         Returns:
             int: An integer representing the current quantity of the stock the user holds.
+        
+        Raises:
+            ValueError: If the amount of stock to be sold is 0 or in the negatie
+            KeyError: If the stock is not found in portfolio
+            ValueError: If the amount of stock being sold is greater than the amount bought
         """
         if quantity <= 0:
             logger.error("Quantity must be a positive integer to sell stock.")
-            return -1  # Return an invalid quantity to indicate failure
+            raise ValueError("Quantity must be a positive integer to sell stock.")  # Return an invalid quantity to indicate failure
         
         stock = self.stock_list.get(stock_symbol)
 
         if not stock:
             logger.warning(f"Stock {stock_symbol} is not in the portfolio.")
-            return -1  # Return an invalid quantity if the stock doesn't exist
+            raise KeyError (f"Stock {stock_symbol} is not in the portfolio.")
         
         if stock.quantity < quantity:
             logger.error(f"Not enough shares of {stock_symbol} to sell. You have {stock.quantity} shares.")
-            return -1  # Return an invalid quantity if there's not enough stock
-        
+            raise ValueError(f"Not enough shares of {stock_symbol} to sell. You have {stock.quantity} shares.")  
         # Sell the stock
         stock.sell(quantity)
 
