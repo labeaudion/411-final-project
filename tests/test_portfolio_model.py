@@ -24,8 +24,8 @@ def sample_stock3():
 
 
 @pytest.fixture
-def sample_portfolio(sample_song1, sample_song2):
-    return [sample_song1, sample_song2]
+def sample_portfolio(sample_stock1, sample_stock2):
+    return [sample_stock1, sample_stock2]
 
 ##################################################
 # Buying Stock Test Cases
