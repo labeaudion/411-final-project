@@ -11,13 +11,12 @@ The application can only make 25 API calls a day for free, so it was difficult t
 2) Create an API key from Alpha Vantage (https://www.alphavantage.co/)
 
 ## Variables Defined in Environment
+- Dockerfile
 - .env file
   - ALPHA_VANTAGE_API_KEY: API key needed to run the application.
   - DB_PATH: Database path for the application.
   - SQL_CREATE_TABLE_PATH: Path to SQL script used to create a database file.
   - CREATE_DB: Sets up the database
-- Dockerfile
-
 ## Route Descriptions
 
 ### Route 1: Healthcheck
