@@ -260,7 +260,7 @@ def create_app(config_class=ProductionConfig):
             # Get all stocks from the portfolio
             stocks = portfolio_model.view_portfolio()
 
-            return make_response(jsonify({'status': 'success', 'songs': stocks}), 200)
+            return make_response(jsonify({'status': 'success', 'stocks': stocks}), 200)
 
         except Exception as e:
             app.logger.error(f"Error retrieving stocks from portfolio: {e}")
