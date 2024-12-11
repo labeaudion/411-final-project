@@ -331,10 +331,6 @@ def create_app(config_class=ProductionConfig):
             app.logger.info('Buying stock: %s, %d', stock_symbol, quantity)
             updated_quantity = portfolio_model.buy_stock(stock_symbol, stock_name, quantity)
 
-            if updated_quantity == -1:
-                # If the return value is -1, it indicates an error in the buy operation
-                return make_response(jsonify({'error': 'Failed to buy stock'}), 400)
-
             app.logger.info("Stock purchased: %s, %s, %d", stock_symbol, stock_name, updated_quantity)
             return make_response(jsonify({'status': 'stock purchased', 'company': stock_symbol, 'updated_quantity': updated_quantity}), 201)
         except Exception as e:
@@ -380,10 +376,6 @@ def create_app(config_class=ProductionConfig):
             # Call the sell_stock method to update the stock
             app.logger.info('Selling stock: %s, %d', symbol, quantity)
             updated_quantity = portfolio_model.sell_stock(symbol, quantity)
-
-            if updated_quantity == -1:
-                # If the return value is -1, it indicates an error in the sell operation
-                return make_response(jsonify({'error': 'Failed to sell stock or invalid quantity'}), 400)
 
             app.logger.info("Stock sold: %s, %d", symbol, updated_quantity)
             return make_response(jsonify({'status': 'stock sold', 'company': symbol, 'updated_quantity': updated_quantity}), 201)
