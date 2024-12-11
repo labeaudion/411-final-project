@@ -20,7 +20,7 @@ RUN apt update && apt install -y curl
 
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
-COPY ./sql/create_meal_table.sql /app/sql/create_meal_table.sql
+COPY ./sql/create_stock_table.sql /app/sql/create_stock_table.sql
 RUN chmod +x /app/sql/create_db.sh
 
 # Define a volume for persisting the database

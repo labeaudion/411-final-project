@@ -97,17 +97,18 @@ look_up_stock() {
     stock_symbol=$1
     echo "Looking up a stock..."
     response=$(curl -s -X GET "$BASE_URL/look-up-stock/$stock_symbol")
-    if echo "$response" | grep -q "symbol : $stock_symbol"
-      echo "Looked up a stock successfully."
-      if [ "$ECHO_JSON" = true ]; then
-        echo "Stock JSON:"
-        echo "$response" | jq .
-      fi
+    if echo "$response" | grep -q "symbol : $stock_symbol"; then
+        echo "Looked up a stock successfully."
+        if [ "$ECHO_JSON" = true ]; then
+            echo "Stock JSON:"
+            echo "$response" | jq .
+        fi
     else
-      echo "Error looking up stock."
-      exit 1
+        echo "Error looking up stock."
+        exit 1
     fi
 }
+
 
 view_portfolio() {
   echo "Getting the portfolio..."
@@ -180,4 +181,6 @@ sell_stock() {
     exit 1
   fi
 }
+
+check_health
 
