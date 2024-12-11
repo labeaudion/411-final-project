@@ -1,4 +1,4 @@
-# CS411 Final Project
+# CS411 Final Project - Ashtosh Bhandari, Berk Komurcuoglu, & Lily Beaudion
 
 ## Application Description
 
